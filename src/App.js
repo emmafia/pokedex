@@ -5,7 +5,7 @@ import Button from "./components/Button.js"
 import Header from "./components/Header.js"
 import Home from "./components/Home.js"
 import About from "./components/About.js"
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { HashRouter as Router, Route, Link } from "react-router-dom";
 
 const request = require('axios');
 const API_URL = 'https://pokeapi.co/api/v2/';
@@ -61,12 +61,10 @@ class Pokemons extends Component {
     });
   }
 
-  handleKeyDown(e) {
-    if (e.keyCode === 13) {
-      this.setState({
-        searchTerm: this.refs.nameInput.value
-      });
-    }
+  handleGetSearchInput(e) {
+    this.setState({
+      searchTerm: e.target.value
+    })
   }
 
   handleClickClear() {
@@ -83,7 +81,7 @@ class Pokemons extends Component {
 
   render() {
     const pokemons = this.state.pokemons
-      .filter(poke => this.state.searchTerm === '' ? poke : poke.name.includes(this.state.searchTerm))
+      .filter(poke => this.state.searchTerm === '' ? poke : poke.name.startsWith(this.state.searchTerm))
       .sort(sortBy(this.state.sortedBy))
       .map((poke, i) => (
         <div key={poke.id} className='pokeDiv' onClick={this.pokemonDetails.bind(this, poke.id)}>
@@ -100,7 +98,8 @@ class Pokemons extends Component {
             ref="nameInput"
             type="text"
             placeholder="Search for a pokemon!"
-            onKeyDown={this.handleKeyDown.bind(this)} />
+            onKeyUp={this.handleGetSearchInput.bind(this)}
+          />
           <Button onClick={this.handleClickClear.bind(this)} text='Clear search' />
           <Button onClick={this.handleClickSort.bind(this, 'name')} text='Sort by name' />
           <Button onClick={this.handleClickSort.bind(this, 'id')} text='Sort by id' />
